@@ -23,7 +23,7 @@ contract PropertyAssetTokenization {
         propertyShareToken = IERC20(propertyShareToken_address);
     }
 
-struct Sell {
+    struct Sell {
         uint sell_percentage;
         uint token_available_count;
     }
@@ -63,6 +63,7 @@ struct Sell {
         Owner[] owner_details;
         uint value;
         bool approved;
+        bool isInspected;
         mapping(string => string) images; // Assuming filename is unique
         mapping(string => string) ownership_proof; // Assuming filename is unique
     }
@@ -79,6 +80,37 @@ struct Sell {
         string pronouns;
         bool isUserVerified;
     }
+
+    struct PropertyInspector {
+        uint id;
+        address inspectorAddress;
+        string name;
+        uint age;
+        string designation;
+        string city;
+    }
+
+    struct PropertyListingRequest {
+        bool requested;
+        string name;
+        string propertyAddress;
+        string description;
+        string location;
+        string[] images;
+        bool isInspected;
+    }
+
+    struct PropertyShareRequest {
+        bool requested;
+        uint percentage;
+    }
+
+    struct PropertyBuyReques{
+
+        // add fields here 
+
+    }
+
     uint inspectors_count;
     uint public users_count;
     uint public properties_count;
@@ -144,7 +176,7 @@ struct Sell {
         string memory _location,
         string[] memory _images
     ) public {
-        require(property[_propertyId].id != 0, "Property does not exist");
+        require(property[_propertyId].unique_id != "", "Property does not exist");
         require(
             !userPropertyListingRequests[msg.sender][_propertyId].requested,
             "Already requested"
@@ -158,7 +190,8 @@ struct Sell {
             propertyAddress: _address,
             description: _description,
             location: _location,
-            images: _images
+            images: _images,
+            isInspected: false
         });
     }
 
@@ -167,12 +200,12 @@ struct Sell {
         bool _isApproved
     ) public onlyInspector {
         property[_propertyId].isInspected = true;
-        property[_propertyId].isApproved = _isApproved;
+        property[_propertyId].approved = _isApproved;
     }
 
     function requestPropertyShare(uint _propertyId, uint _percentage) public {
         require(
-            property[_propertyId].isApproved,
+            property[_propertyId].approved,
             "Property is not approved for listing"
         );
         require(
@@ -190,13 +223,13 @@ struct Sell {
         uint _propertyId,
         address _userAddress
     ) public onlyOwner {
-        require(property[_propertyId].id != 0, "Property does not exist");
+        require(property[_propertyId].unique_id != "", "Property does not exist");
         require(
             userPropertyShares[_userAddress][_propertyId].requested,
             "No share request from user"
         );
         require(
-            !property[_propertyId].isApproved,
+            !property[_propertyId].approved,
             "Property is not approved for listing"
         );
 
@@ -209,6 +242,6 @@ struct Sell {
     }
 
     function approvePropertyListing(uint _propertyId) public onlyOwner {
-        property[_propertyId].isApproved = true;
+        property[_propertyId].approved = true;
     }
 }
