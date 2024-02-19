@@ -7,15 +7,15 @@ pragma solidity >=0.7.0 <0.9.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract PropertyAssetTokenization {
-    address contract_owner;
+    address public contract_owner;
     IERC20 public token;
     IERC20 public propertyValueToken;
     IERC20 public propertyShareToken;
 
-    uint platformFeePercentage = 2; // Platform fee percentage
+    uint public platformFeePercentage = 2;
 
-    address private propertyValueToken_address= 0x1798982f0fCA6B7772a208B8831fA1B086CFf08e;
-    address private propertyShareToken_address = 0xD5e0F15a0730839027f656408B4E81433B0998bA ;
+    address private propertyValueToken_address = 0x1798982f0fCA6B7772a208B8831fA1B086CFf08e;
+    address private propertyShareToken_address = 0xD5e0F15a0730839027f656408B4E81433B0998bA;
 
     constructor() {
         contract_owner = msg.sender;
@@ -64,8 +64,8 @@ contract PropertyAssetTokenization {
         uint value;
         bool approved;
         bool isInspected;
-        mapping(string => string) images; // Assuming filename is unique
-        mapping(string => string) ownership_proof; // Assuming filename is unique
+        mapping(string => string) images;
+        mapping(string => string) ownership_proof;
     }
 
     struct User {
@@ -105,26 +105,18 @@ contract PropertyAssetTokenization {
         uint percentage;
     }
 
-    struct PropertyBuyReques{
-
-        // add fields here 
-
-    }
-
-    uint inspectors_count;
+    uint public inspectors_count;
     uint public users_count;
     uint public properties_count;
     uint public document_id;
-    uint request_count;
+    uint public request_count;
 
     mapping(address => PropertyInspector) public inspectors;
     mapping(address => bool) public isInspector;
-    mapping(address => mapping(uint => PropertyListingRequest))
-        public userPropertyListingRequests;
-    mapping(address => mapping(uint => PropertyShareRequest))
-        public userPropertyShares;
+    mapping(address => mapping(uint => PropertyListingRequest)) public userPropertyListingRequests;
+    mapping(address => mapping(uint => PropertyShareRequest)) public userPropertyShares;
     mapping(uint => Property) public property;
-    mapping(uint => PropertyBuyRequest) public property_buy_request;
+    mapping(uint => Request) public property_buy_request;
     mapping(address => uint[]) public property_sell_received_request;
     mapping(address => uint[]) public property_sell_send_request;
     mapping(uint => uint[]) public all_properties_list;
@@ -176,15 +168,10 @@ contract PropertyAssetTokenization {
         string memory _location,
         string[] memory _images
     ) public {
-        require(property[_propertyId].unique_id != "", "Property does not exist");
-        require(
-            !userPropertyListingRequests[msg.sender][_propertyId].requested,
-            "Already requested"
-        );
+        require(bytes(property[_propertyId].unique_id).length != 0, "Property does not exist");
+        require(!userPropertyListingRequests[msg.sender][_propertyId].requested, "Already requested");
 
-        userPropertyListingRequests[msg.sender][
-            _propertyId
-        ] = PropertyListingRequest({
+        userPropertyListingRequests[msg.sender][_propertyId] = PropertyListingRequest({
             requested: true,
             name: _name,
             propertyAddress: _address,
@@ -204,14 +191,8 @@ contract PropertyAssetTokenization {
     }
 
     function requestPropertyShare(uint _propertyId, uint _percentage) public {
-        require(
-            property[_propertyId].approved,
-            "Property is not approved for listing"
-        );
-        require(
-            !userPropertyShares[msg.sender][_propertyId].requested,
-            "Already requested"
-        );
+        require(property[_propertyId].approved, "Property is not approved for listing");
+        require(!userPropertyShares[msg.sender][_propertyId].requested, "Already requested");
 
         userPropertyShares[msg.sender][_propertyId] = PropertyShareRequest({
             requested: true,
@@ -223,22 +204,12 @@ contract PropertyAssetTokenization {
         uint _propertyId,
         address _userAddress
     ) public onlyOwner {
-        require(property[_propertyId].unique_id != "", "Property does not exist");
-        require(
-            userPropertyShares[_userAddress][_propertyId].requested,
-            "No share request from user"
-        );
-        require(
-            !property[_propertyId].approved,
-            "Property is not approved for listing"
-        );
+        require(bytes(property[_propertyId].unique_id).length != 0, "Property does not exist");
+        require(userPropertyShares[_userAddress][_propertyId].requested, "No share request from user");
+        require(!property[_propertyId].approved, "Property is not approved for listing");
 
-        property_share[_propertyId][_userAddress] = userPropertyShares[
-            _userAddress
-        ][_propertyId].percentage;
-        token_distribution_count[_propertyId][
-            _userAddress
-        ] = userPropertyShares[_userAddress][_propertyId].percentage;
+        property_share[_propertyId][_userAddress] = userPropertyShares[_userAddress][_propertyId].percentage;
+        token_distribution_count[_propertyId][_userAddress] = userPropertyShares[_userAddress][_propertyId].percentage;
     }
 
     function approvePropertyListing(uint _propertyId) public onlyOwner {
