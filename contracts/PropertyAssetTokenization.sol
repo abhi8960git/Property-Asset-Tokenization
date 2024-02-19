@@ -106,8 +106,13 @@ contract PropertyAssetTokenization {
     }
 
     struct PropertyBuyReques{
-
-        // add fields here 
+         uint value_type_count;
+        uint liquid_type_count;
+        string buyer_name;
+        string account_id;
+        string email;
+        string metamask_id;
+        string response_status;
 
     }
 
