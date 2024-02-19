@@ -12,13 +12,11 @@ contract PropertyAssetTokenization {
     IERC20 public propertyValueToken;
     IERC20 public propertyShareToken;
 
-    uint platformFeePercentage = 2; // Platform fee percentage
+   uint platformFeePercentage = 2; // Platform fee percentage
 
-    address private propertyValueToken_address= 0x1798982f0fCA6B7772a208B8831fA1B086CFf08e;
-    address private propertyShareToken_address = 0xD5e0F15a0730839027f656408B4E81433B0998bA ;
-
-    constructor() {
+    constructor(address token_address, address propertyValueToken_address, address propertyShareToken_address) {
         contract_owner = msg.sender;
+        token = IERC20(token_address);
         propertyValueToken = IERC20(propertyValueToken_address);
         propertyShareToken = IERC20(propertyShareToken_address);
     }
