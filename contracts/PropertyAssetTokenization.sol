@@ -23,73 +23,60 @@ contract PropertyAssetTokenization {
         propertyShareToken = IERC20(propertyShareToken_address);
     }
 
-    struct Property {
-        uint id;
-        string name;
-        string _address;
-        string description;
-        string location;
-        string[] images;
-        string[] total_owners;
-        uint percentage;
-        uint total_value;
-        string owner_name;
-        address metamask_id;
-        string user_name;
-        string ownership_proof;
-        bool isApproved;
-        bool isInspected;
+    struct Sell {
+        uint sell_percentage;
+        uint token_available_count;
     }
-
-    struct User {
-        address id;
-        string name;
-        uint age;
-        string city;
-        string addhharNumber;
-        string panNumber;
+    
+    struct Request {
+        uint value_type_count;
+        uint liquid_type_count;
+        string buyer_name;
+        string account_id;
         string email;
-        bool isUserVerified;
+        string metamask_id;
+        string response_status;
     }
-
-    struct PropertyInspector {
-        uint id;
-        address _address;
+    
+    struct Owner {
+        string owner_name;
+        string account_id;
+        string email;
+        string metamask_id;
+        uint percentage;
+        string status;
+        uint total_tokens;
+        uint vt_count;
+        uint lt_count;
+        uint vt_value;
+        uint lt_value;
+        Sell selling_details;
+        Request[] request_details;
+    }
+    
+    struct Property {
+        string unique_id;
         string name;
-        uint age;
-        string designation;
-        string city;
-    }
-
-    enum req_status {
-        requested,
-        accepted,
-        rejected,
-        payment_done,
-        completed
-    }
-
-    struct PropertyBuyRequest {
-        uint req_id;
-        address payable seller_id;
-        address payable buyer_id;
-        uint land_id;
-        req_status _req_status;
-        bool is_payment_done;
-    }
-
-    struct PropertyListingRequest {
-        bool requested;
-        string name;
-        string propertyAddress;
+        string address;
         string description;
         string location;
-        string[] images;
+        Owner[] owner_details;
+        uint value;
+        bool approved;
+        mapping(string => string) images; // Assuming filename is unique
+        mapping(string => string) ownership_proof; // Assuming filename is unique
     }
-
-    struct PropertyShareRequest {
-        bool requested;
-        uint percentage;
+    struct User {
+        string uname;
+        string email;
+        string password;
+        string full_name;
+        uint phone_num;
+        string metamask_id;
+        string aadhar_number;
+        string pan_card;
+        string pronouns;
+        bool isUserVerified;
     }
 
     uint inspectors_count;
